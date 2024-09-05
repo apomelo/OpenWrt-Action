@@ -3,16 +3,15 @@ name: Rockchip_armv8
 on:
   repository_dispatch:
   workflow_dispatch:
-    inputs:
-      ssh:
-        description: 'SSH connection to Actions'
-        required: false
-        default: 'false'
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 env:
-  OPNAME: 'R68S、R2S、R4S、R5C、R5S'
-  REPO_URL: https://github.com/coolsnowwolf/lede
-  REPO_BRANCH: master
+  OPNAME: 'OrangePiR1Plus'
+  REPO_URL: https://github.com/apomelo/openwrt-orangepi
+  REPO_BRANCH: openwrt-21.02
   FEEDS_CONF: feeds.conf.default
   EXTERNAL_FILE: configs/LuciApp.config
   CONFIG_FILE: configs/Rockchip.config
@@ -118,7 +117,7 @@ jobs:
         echo -e "$(nproc) thread compile"
         make -j$(nproc) V=s || make -j4 V=s
         echo "status=success" >> $GITHUB_OUTPUT
-        echo "DEVICE_NAME=R2S-R4S" >> $GITHUB_ENV
+        echo "DEVICE_NAME=OrangePiR1Plus" >> $GITHUB_ENV
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
 
     - name: Check space usage
@@ -161,8 +160,7 @@ jobs:
       if: steps.compile.outputs.status == 'success' && !cancelled()
       run: |
         echo "![](https://img.shields.io/github/downloads/${{ github.repository }}/${{ steps.tag.outputs.release_tag }}/total?style=flat-square)" >> release.txt
-        echo "- FastRhino R68S" >> release.txt
-        echo "- FriendlyARM NanoPi R2S | R4S | R5C | R5S " >> release.txt
+        echo "- Xunlong Orange Pi R1 Plus" >> release.txt
 
     - name: Upload firmware to release
       uses: softprops/action-gh-release@v1
