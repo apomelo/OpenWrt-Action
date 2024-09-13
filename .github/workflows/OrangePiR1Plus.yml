@@ -1,4 +1,4 @@
-name: Rockchip_armv8
+name: OrangePiR1Plus
 
 on:
   repository_dispatch:
@@ -11,10 +11,11 @@ on:
 env:
   OPNAME: 'OrangePiR1Plus'
   REPO_URL: https://github.com/apomelo/openwrt-orangepi
+  # REPO_BRANCH: master
   REPO_BRANCH: openwrt-21.02
   FEEDS_CONF: feeds.conf.default
-  EXTERNAL_FILE: configs/LuciApp.config
-  CONFIG_FILE: configs/Rockchip.config
+  EXTERNAL_FILE: configs/LuciApp_R1Plus.config
+  CONFIG_FILE: configs/OrangePiR1Plus.config
   SYS_CONF_SH: configure.sh
   PACKS: package.sh
   UPLOAD_BIN_DIR: false
@@ -36,7 +37,7 @@ jobs:
       run: |
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
         sudo -E apt-get -qq update
-        sudo -E apt-get -qq install $(curl -fsSL https://raw.githubusercontent.com/bigbugcc/openwrts/master/openwrt-env)
+        sudo -E apt-get -qq install $(curl -fsSL https://raw.githubusercontent.com/apomelo/openwrt-action/master/openwrt-env)
         sudo -E apt-get -qq autoremove --purge
         sudo -E apt-get -qq clean
         sudo timedatectl set-timezone "$TZ"
@@ -172,3 +173,18 @@ jobs:
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
         files: ${{ env.FIRMWARE }}/*
+
+    # - name: Delete workflow runs
+    #   uses: GitRML/delete-workflow-runs@main
+    #   with:
+    #     retain_days: 1
+    #     keep_minimum_runs: 3
+
+    # - name: Remove old Releases
+    #   uses: dev-drprasad/delete-older-releases@v0.1.0
+    #   if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+    #   with:
+    #     keep_latest: 3
+    #     delete_tags: true
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
