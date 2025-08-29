@@ -1,19 +1,24 @@
-name: x86_64Lite
+name: OrangePiR1Plus
 
 on:
   repository_dispatch:
   workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 env:
-  OPNAME: 'x86_64Lite'
-  REPO_URL: https://github.com/coolsnowwolf/lede
-  REPO_BRANCH: master
+  OPNAME: 'OrangePiR1Plus'
+  REPO_URL: https://github.com/apomelo/openwrt-orangepi
+  # REPO_BRANCH: master
+  REPO_BRANCH: openwrt-21.02
   FEEDS_CONF: feeds.conf.default
-  EXTERNAL_FILE: configs/luci/Lite.config
-  CONFIG_FILE: configs/x86_64.config
+  EXTERNAL_FILE: configs/luci/LuciApp_R1Plus.config
+  CONFIG_FILE: configs/Rockchip.config
   SYS_CONF_SH: configure.sh
   PACKS: package.sh
-  EXTEND_DRIVER: false
+  EXTEND_DRIVER: true
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
@@ -51,7 +56,7 @@ jobs:
       uses: stupidloud/cachewrtbuild@main
       with:
           ccache: 'true'
-          mixkey: 'x86'
+          mixkey: 'armv8'
           prefix: 'openwrt'
 
     - name: Load custom feeds
@@ -102,8 +107,7 @@ jobs:
         echo -e "$(nproc) thread compile"
         make -j$(nproc) V=s || make -j4 V=s
         echo "status=success" >> $GITHUB_OUTPUT
-        grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
-        [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
+        echo "DEVICE_NAME=R2S-R4S-OPiR1Plus" >> $GITHUB_ENV
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
 
     - name: Check space usage
@@ -146,6 +150,7 @@ jobs:
       if: steps.compile.outputs.status == 'success' && !cancelled()
       run: |
         echo "![](https://img.shields.io/github/downloads/${{ github.repository }}/${{ steps.tag.outputs.release_tag }}/total?style=flat-square)" >> release.txt
+        echo "- Xunlong Orange Pi R1 Plus" >> release.txt
 
     - name: Upload firmware to release
       uses: softprops/action-gh-release@v1
