@@ -32,7 +32,7 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        sudo rm -rf /etc/apt/sources.list.d/* 
+        sudo find /etc/apt/sources.list.d/ -type f ! -name 'ubuntu.sources' -delete
         sudo -E apt-get -qq update
         sudo -E apt-get -qq install $(curl -fsSL https://raw.githubusercontent.com/apomelo/openwrt-action/master/openwrt-env)
         sudo -E apt-get -qq autoremove --purge
